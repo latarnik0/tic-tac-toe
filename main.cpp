@@ -8,17 +8,6 @@
 2 - miejsce zajęte przez krzyżyk
 */
 
-/*
-[0 1 2 3 4 5 6 7 8]
-[0  1   2]
-[3  4   5]
-[6  7   8]
-*/
-
-int vertIndex(int k, int m, int S){
-    // S = sqrt(rozmiar_planszy)
-    return k + m*S;
-}
 
 std::vector<int> makeBoard(int n){
     std::vector<int> Board = {};
@@ -28,12 +17,37 @@ std::vector<int> makeBoard(int n){
     return Board;
 }
 
-void checkForWinVer(std::vector<int>& Board){
-    // TODO
-}
+int checkForWinHor(const std::vector<int>& Board, int move_index, int S) {
+    int player = Board[move_index];
 
-void checkForWinHor(std::vector<int>& Board){
-    // TODO
+    if (player == 0) return 0; 
+
+    int counter = 1; 
+    
+    // w którym wierszu został wykonany ruch.
+    int row = move_index / S; 
+
+    // W LEWO
+    int current_indexl = move_index - 1;
+    
+    while(current_indexl >= 0 && (current_indexl / S) == row && Board[current_indexl] == player){
+        counter++;
+        current_indexl--; // dalej w lewo
+    }
+
+    // W PRAWO
+    int current_index = move_index + 1;
+    
+    while(current_index < Board.size() && (current_index / S) == row && Board[current_index] == player){
+        counter++;
+        current_index++; // dalej w prawo
+    }
+
+    if(counter >= S){
+        return player;
+    }
+
+    return 0;
 }
 
 void makeMove(std::vector<int>& Board, int index, int move){
@@ -51,14 +65,22 @@ void makeMove(std::vector<int>& Board, int index, int move){
     else{
         std::cout<<"Something weird is here: "<<Board[index]<<std::endl;
     }
-    checkForWinHor(Board);
+
+    int winner = checkForWinHor(Board, index, sqrt(Board.size()));
+    if(winner != 0){
+        std::cout<<"Winner: "<<winner<<std::endl;
+        return;
+    }
+    else{
+        std::cout<<"No winner yet"<<std::endl;
+    }
 }
 
 int main(){
     std::vector<int> Board = makeBoard(3);
     makeMove(Board, 0, 1);
-    makeMove(Board, 1, 2);
-    makeMove(Board, 2, 1);
+    makeMove(Board, 1, 1);
     makeMove(Board, 3, 2);
+    makeMove(Board, 2, 1);
 }
 
