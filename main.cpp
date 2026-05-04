@@ -8,7 +8,11 @@
 2 - miejsce zajęte przez krzyżyk
 */
 
-
+/*
+[0  1   2]
+[3  4   5]
+[6  7   8]
+*/
 std::vector<int> makeBoard(int n){
     std::vector<int> Board = {};
     for(int i=0; i<n*n; ++i){
@@ -28,19 +32,49 @@ int checkForWinHor(const std::vector<int>& Board, int move_index, int S) {
     int row = move_index / S; 
 
     // W LEWO
-    int current_indexl = move_index - 1;
+    int current_index_left = move_index - 1;
     
-    while(current_indexl >= 0 && (current_indexl / S) == row && Board[current_indexl] == player){
+    while(current_index_left >= 0 && (current_index_left / S) == row && Board[current_index_left] == player){
         counter++;
-        current_indexl--; // dalej w lewo
+        current_index_left--; // dalej w lewo
     }
 
     // W PRAWO
-    int current_index = move_index + 1;
+    int current_index_right = move_index + 1;
     
-    while(current_index < Board.size() && (current_index / S) == row && Board[current_index] == player){
+    while(current_index_right < Board.size() && (current_index_right / S) == row && Board[current_index_right] == player){
         counter++;
-        current_index++; // dalej w prawo
+        current_index_right++; // dalej w prawo
+    }
+
+    if(counter >= S){
+        return player;
+    }
+
+    return 0;
+}
+
+int checkForWinVer(const std::vector<int>& Board, int move_index, int S) {
+    int player = Board[move_index];
+
+    if (player == 0) return 0; 
+
+    int counter = 1; 
+
+    // W GÓRĘ
+    int current_index_up = move_index - S;
+    
+    while(current_index_up >= 0 && Board[current_index_up] == player){
+        counter++;
+        current_index_up -= S;
+    }
+
+    // W DÓŁ
+    int current_index_down = move_index + S;
+    
+    while(current_index_down < Board.size() && Board[current_index_down] == player){
+        counter++;
+        current_index_down += S;
     }
 
     if(counter >= S){
@@ -66,14 +100,7 @@ void makeMove(std::vector<int>& Board, int index, int move){
         std::cout<<"Something weird is here: "<<Board[index]<<std::endl;
     }
 
-    int winner = checkForWinHor(Board, index, sqrt(Board.size()));
-    if(winner != 0){
-        std::cout<<"Winner: "<<winner<<std::endl;
-        return;
-    }
-    else{
-        std::cout<<"No winner yet"<<std::endl;
-    }
+    // tutaj sprawdzanie wygranej zaraz po wykonaniu ruchu
 }
 
 int main(){
