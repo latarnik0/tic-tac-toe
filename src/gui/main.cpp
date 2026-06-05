@@ -1,5 +1,5 @@
 #include <raylib.h>
-#include "/home/latarnik3/piaa2/include/backend/tictactoe.h"
+#include "/include/backend/tictactoe.h"
 #include <string>
 #include <algorithm>
 
@@ -11,16 +11,12 @@ int main() {
     InitWindow(screenWidth, screenHeight, "Kółko i Krzyżyk - Raylib");
     SetTargetFPS(60);
 
-    // Zmienne stanu aplikacji
     GameState state = GameState::MENU;
-    
-    // Zmienne do konfiguracji (odpowiednik Twojego starego getConfig)
     int boardSize = 3;
     int winCondition = 3;
     GameMode currentMode = GameMode::PlayerVsAI;
     PlayerSymbol humanSymbol = PlayerSymbol::Cross;
     
-    // Zmienne działającej gry
     GameSetup setup;
     PlayerSymbol currentTurn = PlayerSymbol::Cross; // Krzyżyk zawsze zaczyna
     int matchResult = 0; // 1 = Krzyżyk, 2 = Kółko, 3 = Remis
@@ -39,31 +35,24 @@ int main() {
         Vector2 mousePoint = GetMousePosition();
         bool clicked = IsMouseButtonPressed(MOUSE_LEFT_BUTTON);
 
-        // ==========================================
         // LOGIKA APLIKACJI
-        // ==========================================
         if (state == GameState::MENU) {
             if (clicked) {
-                // Rozmiar planszy
                 if (CheckCollisionPointRec(mousePoint, btnSizeMinus) && boardSize > 3) boardSize--;
                 if (CheckCollisionPointRec(mousePoint, btnSizePlus) && boardSize < 10) boardSize++;
-                
-                // Warunek wygranej
+            
                 if (CheckCollisionPointRec(mousePoint, btnWinMinus) && winCondition > 3) winCondition--;
                 if (CheckCollisionPointRec(mousePoint, btnWinPlus) && winCondition < boardSize) winCondition++;
                 if (winCondition > boardSize) winCondition = boardSize;
 
-                // Tryb gry
                 if (CheckCollisionPointRec(mousePoint, btnMode)) {
                     currentMode = (currentMode == GameMode::PlayerVsAI) ? GameMode::PlayerVsPlayer : GameMode::PlayerVsAI;
                 }
 
-                // Wybór znaku (tylko w trybie vs AI)
                 if (currentMode == GameMode::PlayerVsAI && CheckCollisionPointRec(mousePoint, btnSymbol)) {
                     humanSymbol = (humanSymbol == PlayerSymbol::Cross) ? PlayerSymbol::Circle : PlayerSymbol::Cross;
                 }
 
-                // Przycisk START
                 if (CheckCollisionPointRec(mousePoint, btnStart)) {
                     setup.board = makeBoard(boardSize, winCondition);
                     setup.mode = currentMode;
@@ -79,7 +68,6 @@ int main() {
         else if (state == GameState::GAME) {
             // TURA AI
             if (setup.mode == GameMode::PlayerVsAI && currentTurn == setup.aiSymbol) {
-                // WAŻNE: Dla plansz > 3x3 ograniczamy maxDepth, inaczej AI zawiesi grę na minuty!
                 int maxDepth = (boardSize > 3) ? 6 : 9; 
                 
                 int moveIndex = findBestMove(setup.board, setup.aiSymbol, setup.humanSymbol, maxDepth);
@@ -95,7 +83,7 @@ int main() {
                     currentTurn = setup.humanSymbol; // Przekazanie tury
                 }
             } 
-            // TURA GRACZA (lub obu graczy w trybie PvP)
+            // TURA GRACZA
             else {
                 if (clicked) {
                     float cellSize = (float)screenWidth / setup.board.S;
@@ -105,7 +93,7 @@ int main() {
 
                     int tmp = makeMove(setup.board, index, currentTurn);
                     
-                    if (tmp >= 0) { // Zwraca 0 (gramy dalej) lub >0 (wygrana)
+                    if (tmp >= 0) { 
                         if (tmp > 0) {
                             matchResult = static_cast<int>(currentTurn); // Obecny gracz wygrywa
                             state = GameState::GAME_OVER;
@@ -126,9 +114,7 @@ int main() {
             }
         }
 
-        // ==========================================
-        // RYSOWANIE GRAFIKI
-        // ==========================================
+        //GRAFIKA
         BeginDrawing();
         ClearBackground(RAYWHITE);
 

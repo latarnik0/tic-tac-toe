@@ -1,4 +1,4 @@
-#include "/home/latarnik3/piaa2/include/backend/tictactoe.h"
+#include "/include/backend/tictactoe.h"
 #include <algorithm>
 
 Board makeBoard(int n, int win_condition) {
