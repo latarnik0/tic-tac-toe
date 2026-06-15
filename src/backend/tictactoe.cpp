@@ -1,4 +1,4 @@
-#include "/include/backend/tictactoe.h"
+#include "/home/latarnik3/piaa2/include/backend/tictactoe.h"
 #include <algorithm>
 
 Board makeBoard(int n, int win_condition) {
@@ -63,9 +63,8 @@ PlayerSymbol checkForWin(const Board& board, int move_index) {
 }
 
 int makeMove(Board& board, int index, PlayerSymbol move) {
-    // Kody błędów zamiast std::cout
     if(index < 0 || index >= board.S * board.S) {
-        return -1; // Nielegalny ruch (poza planszą)
+        return -1; // Nielegalny ruch
     }
 
     if(board.vals[index] != PlayerSymbol::Empty) {
@@ -82,7 +81,7 @@ int makeMove(Board& board, int index, PlayerSymbol move) {
         return static_cast<int>(winner);
     }
     
-    return 0; // Brak wygranej, gra toczy się dalej
+    return 0; // Brak wygranej
 }
 
 bool isBoardFull(const Board& board) {

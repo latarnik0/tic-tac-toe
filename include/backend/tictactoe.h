@@ -3,11 +3,10 @@
 
 #include <vector>
 
-// Definicje typów
 enum class GameMode { PlayerVsPlayer, PlayerVsAI };
 enum class PlayerSymbol { Empty = 0, Cross = 1, Circle = 2 };
 
-// Struktury danych
+
 struct Board {
     std::vector<PlayerSymbol> vals;
     int S;
@@ -21,7 +20,7 @@ struct GameSetup {
     PlayerSymbol humanSymbol;
 };
 
-// Deklaracje funkcji API logiki gry
+
 Board makeBoard(int n, int win_condition);
 
 int radius(const Board& board, int move_index, PlayerSymbol player, int step, int col_step);
@@ -37,4 +36,4 @@ int minimax(Board& board, int depth, bool isMaximizing, int alpha, int beta, int
 
 int findBestMove(Board& board, PlayerSymbol aiSymbol, PlayerSymbol humanSymbol, int max_depth);
 
-#endif // TICTACTOE_H
+#endif

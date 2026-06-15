@@ -1,5 +1,5 @@
 #include <raylib.h>
-#include "/include/backend/tictactoe.h"
+#include "/home/latarnik3/piaa2/include/backend/tictactoe.h"
 #include <string>
 #include <algorithm>
 
@@ -20,6 +20,7 @@ int main() {
     GameSetup setup;
     PlayerSymbol currentTurn = PlayerSymbol::Cross; // Krzyżyk zawsze zaczyna
     int matchResult = 0; // 1 = Krzyżyk, 2 = Kółko, 3 = Remis
+    bool first_move = true;
 
     // --- Definicje przycisków ---
     Rectangle btnSizeMinus  = { 250, 150, 40, 40 };
@@ -35,7 +36,7 @@ int main() {
         Vector2 mousePoint = GetMousePosition();
         bool clicked = IsMouseButtonPressed(MOUSE_LEFT_BUTTON);
 
-        // LOGIKA APLIKACJI
+        //LOGIKA 
         if (state == GameState::MENU) {
             if (clicked) {
                 if (CheckCollisionPointRec(mousePoint, btnSizeMinus) && boardSize > 3) boardSize--;
@@ -57,7 +58,14 @@ int main() {
                     setup.board = makeBoard(boardSize, winCondition);
                     setup.mode = currentMode;
                     setup.humanSymbol = humanSymbol;
-                    setup.aiSymbol = (humanSymbol == PlayerSymbol::Cross) ? PlayerSymbol::Circle : PlayerSymbol::Cross;
+                    //setup.aiSymbol = (humanSymbol == PlayerSymbol::Cross) ? PlayerSymbol::Circle : PlayerSymbol::Cross;
+                    
+                    if(setup.humanSymbol == PlayerSymbol::Cross){
+                        setup.aiSymbol = PlayerSymbol::Circle;
+                    }
+                    else{
+                        setup.aiSymbol = PlayerSymbol::Cross;
+                    }
                     
                     currentTurn = PlayerSymbol::Cross; // Krzyżyk zawsze zaczyna
                     matchResult = 0;
@@ -66,10 +74,21 @@ int main() {
             }
         } 
         else if (state == GameState::GAME) {
-            // TURA AI
-            if (setup.mode == GameMode::PlayerVsAI && currentTurn == setup.aiSymbol) {
+            // TURA AI jako krzyzyk
+            if(setup.mode == GameMode::PlayerVsAI && setup.aiSymbol == PlayerSymbol::Cross && first_move == true){
                 int maxDepth = (boardSize > 3) ? 6 : 9; 
+
+                int moveIndex = findBestMove(setup.board, setup.aiSymbol, setup.humanSymbol, maxDepth);
+                int tmp = makeMove(setup.board, moveIndex, setup.aiSymbol);
                 
+                first_move = false;
+                currentTurn = setup.humanSymbol; // Przekazanie tury
+            }
+
+            // TURA AI kolejna
+            if(setup.mode == GameMode::PlayerVsAI && currentTurn == setup.aiSymbol && first_move == false) {
+                int maxDepth = (boardSize > 3) ? 6 : 9; 
+
                 int moveIndex = findBestMove(setup.board, setup.aiSymbol, setup.humanSymbol, maxDepth);
                 int tmp = makeMove(setup.board, moveIndex, setup.aiSymbol);
                 
@@ -83,8 +102,24 @@ int main() {
                     currentTurn = setup.humanSymbol; // Przekazanie tury
                 }
             } 
-            // TURA GRACZA
-            else {
+
+            // TURA GRACZA pierwsza jako krzyzyk
+            if(setup.mode == GameMode::PlayerVsAI && setup.humanSymbol == PlayerSymbol::Cross && first_move == true){
+                if (clicked) {
+                    float cellSize = (float)screenWidth / setup.board.S;
+                    int col = GetMouseX() / cellSize;
+                    int row = GetMouseY() / cellSize;
+                    int index = row * setup.board.S + col;
+
+                    int tmp = makeMove(setup.board, index, currentTurn);
+                }
+                
+                first_move = false;
+                currentTurn = setup.aiSymbol; // Przekazanie tury
+            }
+
+            // TURA GRACZA kolejna
+            if(setup.mode == GameMode::PlayerVsAI && currentTurn == setup.humanSymbol && first_move == false){
                 if (clicked) {
                     float cellSize = (float)screenWidth / setup.board.S;
                     int col = GetMouseX() / cellSize;
