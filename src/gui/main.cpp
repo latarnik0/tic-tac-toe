@@ -1,11 +1,16 @@
 #include <raylib.h>
-#include "/home/latarnik3/piaa2/include/backend/tictactoe.h"
+#include "/home/latarnik3/piaa2/include/backend/tictactoe.hpp"
+#include "/home/latarnik3/piaa2/include/backend/tests.hpp"
 #include <string>
 #include <algorithm>
+#include <chrono>
+#include <iostream>
 
 enum class GameState { MENU, GAME, GAME_OVER };
 
+
 int main() {
+    
     const int screenWidth = 800;
     const int screenHeight = 800;
     InitWindow(screenWidth, screenHeight, "Kółko i Krzyżyk - Raylib");
@@ -31,6 +36,8 @@ int main() {
     Rectangle btnSymbol     = { 250, 450, 290, 40 };
     Rectangle btnStart      = { 300, 550, 200, 60 };
     Rectangle btnRestart    = { 300, 500, 200, 60 };
+
+    auto start = std::chrono::high_resolution_clock::now();
 
     while (!WindowShouldClose()) {
         Vector2 mousePoint = GetMousePosition();
@@ -87,7 +94,7 @@ int main() {
 
             // TURA AI kolejna
             if(setup.mode == GameMode::PlayerVsAI && currentTurn == setup.aiSymbol && first_move == false) {
-                int maxDepth = (boardSize > 3) ? 6 : 9; 
+                int maxDepth = boardSize; 
 
                 int moveIndex = findBestMove(setup.board, setup.aiSymbol, setup.humanSymbol, maxDepth);
                 int tmp = makeMove(setup.board, moveIndex, setup.aiSymbol);
@@ -226,12 +233,14 @@ int main() {
 
                 DrawRectangleRec(btnRestart, DARKBLUE);
                 DrawText("MENU", 355, 515, 30, WHITE);
+
             }
         }
-
         EndDrawing();
     }
 
     CloseWindow();
+    
+    //runPerformanceTests();
     return 0;
 }
